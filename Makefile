@@ -1,11 +1,16 @@
 ENV=.env
+PYTHON=$(ENV)/bin/python3
 
 run: $(ENV)/bin/activate
-	$(ENV)/bin/python3 app.py
+	$(PYTHON) app.py
+
+build: $(ENV)/bin/activate
+	$(PYTHON) build.py
 
 clean:
 	rm -rf __pycache__
 	rm -rf $(ENV)
+	rm -rf build
 
 $(ENV)/bin/activate: requirements.txt
 	python3 -m venv $(ENV)
