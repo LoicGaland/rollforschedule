@@ -23,4 +23,6 @@ jobs:
           ls ${{ github.workspace }}
       - name: Build static website
         run: make build
+      - name: List files in the build directory
+        run: ls build
       - run: echo "🍏 This job's status is ${{ job.status }}."
