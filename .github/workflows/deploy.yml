@@ -8,6 +8,8 @@ jobs:
   Deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3            
       - run: make build
       - uses: jsmrcaga/action-netlify-deploy@v1.1.0
         with:
