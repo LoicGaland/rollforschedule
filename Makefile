@@ -1,5 +1,6 @@
 ENV=.env
 PYTHON=$(ENV)/bin/python3
+PYTHON_VERSION=3.8
 
 run: $(ENV)/bin/activate
 	$(PYTHON) app.py
