@@ -5,9 +5,11 @@ FLASK_APP=app
 FLASK := FLASK_APP=$(FLASK_APP) $(ENV)/bin/flask
 
 run: $(ENV)/bin/activate
+	$(PYTHON) init_db.py
 	$(FLASK) run
 
 debug: $(ENV)/bin/activate
+	$(PYTHON) init_db.py
 	FLASK_DEBUG=True $(FLASK) run
 
 clean:
@@ -17,4 +19,3 @@ clean:
 $(ENV)/bin/activate: requirements.txt
 	python3 -m venv $(ENV)
 	$(ENV)/bin/pip install -r requirements.txt
-
