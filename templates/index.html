@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %} Index {% endblock %}
+
+{% from 'macros.html' import table_element %}
+{% from 'macros.html' import player_element %}
+
+{% block content %}
+    <h1 class="title">Players</h2>
+    <div class="content">
+        {% for player in players %}
+        {{ player_element(player) }}
+        {% endfor %}
+    </div>
+    <h1 class="title">Tables</h2>
+    <div class="content">
+        {% for table in tables %}
+            {{ table_element(table) }}
+        {% endfor %}
+    </div>
+{% endblock %}

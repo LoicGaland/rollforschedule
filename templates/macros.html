@@ -1,0 +1,27 @@
+{% macro table_element(table) %}
+            <div class="db_element">
+                <h3>{{ table.title }}</h4>
+                <h4>Description</h4>
+                <p>{{ table.description }}</p>
+                <h4>Players</h4>
+                 <ul>
+                    {% for player in table.players %}
+                    <li><a href="{{ url_for('player', player_id=player.id) }}">{{ player.username }}</a></li>
+                    {% endfor %}
+                </ul> 
+            </div>
+{% endmacro %}
+
+{% macro player_element(player) %}
+            <div class="db_element">
+                <p class="name"><b>{{ player.username }}</b> (#{{ player.id }})</p>
+                <p>Tables:
+                     <ul>
+                        {% for table in player.tables %}
+                        <li><a href="{{ url_for('table', table_id=table.id) }}">{{ table.title }}</a></li>
+                        {% endfor %}
+                    </ul> 
+                </p>
+                <p>Joined: {{ player.created_at }}</p>
+            </div>
+{% endmacro %}

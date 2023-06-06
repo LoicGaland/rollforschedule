@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1 class="title">{% block title %} Players {% endblock %}</h1>
+    <div class="content">
+        {% for player in players %}
+            <div class="player">
+                <p><b>#{{ player.id }}</b></p>
+                <b>
+                    <p class="name">{{ player.firstname }} {{ player.lastname }}</p>
+                </b>
+                <p>{{ player.email }}</p>
+                <p>Joined: {{ player.created_at }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
