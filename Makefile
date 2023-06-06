@@ -4,13 +4,14 @@ PYTHON_VERSION=3.8
 FLASK_APP=app
 FLASK := FLASK_APP=$(FLASK_APP) $(ENV)/bin/flask
 
-run: $(ENV)/bin/activate
-	$(PYTHON) init_db.py
+run: build
 	$(FLASK) run
 
-debug: $(ENV)/bin/activate
-	$(PYTHON) init_db.py
+debug: build
 	FLASK_DEBUG=True $(FLASK) run
+
+build: $(ENV)/bin/activate
+	$(PYTHON) init_db.py
 
 clean:
 	rm -rf __pycache__
