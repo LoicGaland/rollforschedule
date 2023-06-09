@@ -1,7 +1,5 @@
-from app import db, create_app
+from app import db, app
 from models import Table, Player
-
-app = create_app()
 
 with app.app_context():
     db.drop_all()
