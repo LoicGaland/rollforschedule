@@ -6,7 +6,7 @@
                 <h4>Players</h4>
                  <ul>
                     {% for player in table.players %}
-                    <li><a href="{{ url_for('player', player_id=player.id) }}">{{ player.username }}</a></li>
+                    <li><a href="{{ url_for('main.player', player_id=player.id) }}">{{ player.username }}</a></li>
                     {% endfor %}
                 </ul> 
             </div>
@@ -18,7 +18,7 @@
                 <p>Tables:
                      <ul>
                         {% for table in player.tables %}
-                        <li><a href="{{ url_for('table', table_id=table.id) }}">{{ table.title }}</a></li>
+                        <li><a href="{{ url_for('main.table', table_id=table.id) }}">{{ table.title }}</a></li>
                         {% endfor %}
                     </ul> 
                 </p>

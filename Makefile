@@ -1,7 +1,7 @@
 ENV=.venv
 PYTHON=$(ENV)/bin/python3
 PYTHON_VERSION=3.8
-FLASK_APP=app
+FLASK_APP=app:create_app
 FLASK := FLASK_APP=$(FLASK_APP) $(ENV)/bin/flask
 
 run: build
