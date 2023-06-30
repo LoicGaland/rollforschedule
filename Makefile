@@ -8,6 +8,7 @@ run: build
 	$(FLASK) run
 
 debug: build
+	$(PYTHON) init_db.py
 	FLASK_DEBUG=True $(FLASK) run
 
 build: $(ENV)/bin/activate

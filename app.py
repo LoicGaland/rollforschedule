@@ -1,8 +1,10 @@
 import os
 
 from flask import Flask, render_template, request, url_for, redirect
+from flask_admin import Admin
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from admin import AdminView, RFSAdminView
 
 db = SQLAlchemy()
 
@@ -26,16 +28,27 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
 
-    from models import Player
+    from models import Player, Table, Availability
 
     @login_manager.user_loader
     def load_user(user_id):
-        # since the user_id is just the primary key of our user table,
-        # use it in the query for the user
         return Player.query.get(int(user_id))
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(main_blueprint)
+
+    app.config['FLASK_ADMIN_SWATCH'] = 'slate'
+    admin = Admin(
+        app,
+        'RFS Admin',
+        url='/',
+        index_view=RFSAdminView(name='RFSAdmin'),
+        template_mode='bootstrap3'
+    )
+
+    admin.add_view(AdminView(Player, db.session))
+    admin.add_view(AdminView(Table, db.session))
+    admin.add_view(AdminView(Availability, db.session))
 
     return app
 

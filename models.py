@@ -16,11 +16,12 @@ class Player(UserMixin, db.Model):
     username = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
+    admin_rights = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime(timezone=True),
                            server_default=func.now())
 
     def __repr__(self):
-        return f'<Player {self.firstname}>'
+        return f'<Player {self.password}>'
 
 
 class Table(db.Model):
