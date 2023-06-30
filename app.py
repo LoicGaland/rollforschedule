@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, url_for, redirect
 from flask_admin import Admin
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
-from admin import AdminView, RFSAdminView
+from admin import TableView, PlayerView, AvailabilityView, AdminView
 
 db = SQLAlchemy()
 
@@ -42,13 +42,13 @@ def create_app():
         app,
         'RFS Admin',
         url='/',
-        index_view=RFSAdminView(name='RFSAdmin'),
+        index_view=AdminView(name='RFSAdmin'),
         template_mode='bootstrap3'
     )
 
-    admin.add_view(AdminView(Player, db.session))
-    admin.add_view(AdminView(Table, db.session))
-    admin.add_view(AdminView(Availability, db.session))
+    admin.add_view(PlayerView(Player, db.session))
+    admin.add_view(TableView(Table, db.session))
+    admin.add_view(AvailabilityView(Availability, db.session))
 
     return app
 

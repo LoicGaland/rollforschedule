@@ -21,7 +21,7 @@ class Player(UserMixin, db.Model):
                            server_default=func.now())
 
     def __repr__(self):
-        return f'<Player {self.password}>'
+        return f'<Player {self.username}>'
 
 
 class Table(db.Model):
