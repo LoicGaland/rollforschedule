@@ -1,5 +1,6 @@
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+from sqlalchemy.schema import UniqueConstraint
 
 from app import db
 
@@ -39,13 +40,15 @@ class Table(db.Model):
 
 
 class Availability(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     player_id = db.Column(
         db.Integer,
-        db.ForeignKey('player.id'),
-        primary_key=True
+        db.ForeignKey('player.id')
     )
-    day = db.Column(db.Date, primary_key=True)
+    player = db.relationship('Player', backref=db.backref('available', lazy='dynamic'))
+    day = db.Column(db.Date)
     available = db.Column(db.Boolean)
+    __table_args__ = (UniqueConstraint('player_id', 'day', name='_player_availability'),)
 
     def __repr__(self):
         return f'<Availability {self.player_id} {self.day}>'
