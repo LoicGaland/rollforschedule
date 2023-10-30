@@ -1,10 +1,10 @@
 import os
 
+from admin import TableView, PlayerView, AvailabilityView, AdminView
 from flask import Flask, render_template, request, url_for, redirect
 from flask_admin import Admin
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
-from admin import TableView, PlayerView, AvailabilityView, AdminView
 
 db = SQLAlchemy()
 
