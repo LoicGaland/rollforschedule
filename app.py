@@ -40,7 +40,7 @@ def create_app():
     app.config['FLASK_ADMIN_SWATCH'] = 'slate'
     admin = Admin(
         app,
-        'RFS Admin',
+        'Roll for Schedule',
         url='/',
         index_view=AdminView(name='RFSAdmin'),
         template_mode='bootstrap3'
