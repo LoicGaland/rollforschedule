@@ -3,3 +3,5 @@ gunicorn
 flask_sqlalchemy
 flask_login
 flask_admin
+werkzeug==2.3
+wtforms==2.3.3
