@@ -12,6 +12,7 @@ db = SQLAlchemy()
 def create_app():
     from auth import auth as auth_blueprint
     from main import main as main_blueprint
+    from date_picker import date_picker as date_picker_blueprint
 
     basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -36,6 +37,7 @@ def create_app():
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(main_blueprint)
+    app.register_blueprint(date_picker_blueprint)
 
     app.config['FLASK_ADMIN_SWATCH'] = 'slate'
     admin = Admin(
