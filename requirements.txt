@@ -1,7 +1,7 @@
 flask
-gunicorn
-flask_sqlalchemy
-flask_login
 flask_admin
-werkzeug==2.3
-wtforms==2.3.3
+flask_login
+flask_sqlalchemy
+gunicorn
+werkzeug==2.3 # downgrade due to incompatibility with flask_login (fix in 0.6.3)
+wtforms==2.3.3 # downgrade due to incompatibility with flask_admin
