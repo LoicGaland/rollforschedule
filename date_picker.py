@@ -1,3 +1,6 @@
+import calendar
+from datetime import datetime
+
 from flask import Blueprint, redirect, render_template, session
 from flask_wtf import FlaskForm
 from wtforms.fields.html5 import DateField
@@ -37,3 +40,27 @@ def date_display():
     startdate = session['startdate']
     enddate = session['enddate']
     return render_template('date_display.html')
+
+
+@date_picker.route('/my_schedule')
+def my_schedule():
+    now = datetime.now()
+    month = calendar.month_name[now.month]
+    c = calendar.Calendar()
+    iter_days = c.itermonthdays3(now.year, now.month)
+    before_month_days = []
+    after_month_days = []
+    month_days = []
+    for date in iter_days:
+        if date[:2] == (now.year, now.month):
+            month_days.append(date[2])
+        elif date[:2] < (now.year, now.month):
+            before_month_days.append(date[2])
+        else:
+            after_month_days.append(date[2])
+
+    return render_template(
+        'my_schedule.html', month=month, year=now.year,
+        before_month_days=before_month_days, after_month_days=after_month_days,
+        month_days=month_days, active_day=now.day
+    )

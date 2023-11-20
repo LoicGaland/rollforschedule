@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<body>
+ <div class="month">
+  <ul>
+    <li class="prev">&#10094;</li>
+    <li class="next">&#10095;</li>
+    <li>{{month}}<br><span style="font-size:18px">{{year}}</span></li>
+  </ul>
+</div>
+
+<ul class="weekdays">
+  <li>Mo</li>
+  <li>Tu</li>
+  <li>We</li>
+  <li>Th</li>
+  <li>Fr</li>
+  <li>Sa</li>
+  <li>Su</li>
+</ul>
+
+<ul class="days">
+  {%for day in before_month_days%}
+    <li>{{day}}</li>
+  {%endfor%}
+  {%for day in month_days%}
+  	<li>
+    {% if day == active_day %}
+        <span class="active">{{day}}</span>
+    {% else %}
+        {{day}}
+    {% endif %}
+    </li>
+  {%endfor%}
+  {%for day in after_month_days%}
+    <li>{{day}}</li>
+  {%endfor%}
+</ul> 
+
+</body>
+{% endblock %}
