@@ -44,13 +44,19 @@ def date_display():
 
 @date_picker.route('/my_schedule')
 def my_schedule():
+
+    # Set calendar to current month
     now = datetime.now()
     month = calendar.month_name[now.month]
     c = calendar.Calendar()
+
+    # Get all days for a calendar starting on a monday and ending on a sunday
     iter_days = c.itermonthdays3(now.year, now.month)
     before_month_days = []
     after_month_days = []
     month_days = []
+
+    # Sort days into lists for previous, current and following month
     for date in iter_days:
         if date[:2] == (now.year, now.month):
             month_days.append(date[2])

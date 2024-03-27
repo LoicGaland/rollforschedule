@@ -94,6 +94,7 @@ body {font-family: Verdana, sans-serif;}
   padding: 10px 0;
   background: #eee;
   margin: 0;
+  user-select: none;
 }
 
 .days li {
@@ -107,10 +108,25 @@ body {font-family: Verdana, sans-serif;}
 }
 
 /* Highlight the "current" day */
-.days li .active {
+.days li .unset {
+  padding: 5px;
+  cursor:pointer;
+}
+.days li .available {
   padding: 5px;
   background: #1abc9c;
-  color: white !important
+  color: white !important;
+  cursor:pointer;
+}
+.days li .unavailable {
+  padding: 5px;
+  background: #bc1a42;
+  color: white !important;
+  cursor:pointer;
+}
+.days li .out_of_current_month {
+  padding: 5px;
+  color: rgb(201, 201, 201) !important
 }
     </style>
 </head>
