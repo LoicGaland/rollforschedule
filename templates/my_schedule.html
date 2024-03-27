@@ -8,10 +8,26 @@
         "available": "unavailable",
         "unavailable": "unset"
       }
-      const element = document.getElementById(clicked_id);  // Get the DIV element
-      const new_class = class_cycle[element.className]
+      const element = document.getElementById(clicked_id);
+
+      var new_class
+      if (element.className == "available") {
+        new_class = "unavailable";
+      } else {
+        new_class = "available";
+      }
+        
       element.classList.remove(element.className);
       element.classList.add(new_class);
+    }
+
+    function unsetAvailability(right_clicked_id) {
+      const element = document.getElementById(right_clicked_id);
+
+      if (element.className != "unset") {
+        element.classList.remove(element.className);
+        element.classList.add("unset");
+      }
     }
   </script>
 
@@ -41,7 +57,7 @@
   {%endfor%}
   {%for day in month_days%}
   	<li>
-        <span id="{{day}}" class="unset" onclick="toggleAvailability(this.id)">{{day}}</span>
+        <span id="{{day}}" class="unset" onclick="toggleAvailability(this.id)" oncontextmenu="unsetAvailability(this.id);return false;">{{day}}</span>
     </li>
   {%endfor%}
   {%for day in after_month_days%}
