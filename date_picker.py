@@ -1,11 +1,16 @@
 import calendar
-from datetime import datetime
+import json
+from datetime import datetime, date
 
-from flask import Blueprint, redirect, render_template, session
+from flask import Blueprint, redirect, render_template, session, request
+from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms.fields.html5 import DateField
 from wtforms.validators import DataRequired
 from wtforms import validators, SubmitField
+
+from app import db
+from models import Availability
 
 
 class InfoForm(FlaskForm):
@@ -42,31 +47,77 @@ def date_display():
     return render_template('date_display.html')
 
 
-@date_picker.route('/my_schedule')
+@date_picker.route('/my_schedule', methods=['GET', 'POST'])
+@login_required
 def my_schedule():
 
-    # Set calendar to current month
-    now = datetime.now()
-    month = calendar.month_name[now.month]
-    c = calendar.Calendar()
+    # Process and commit availability POST data
+    if request.method == 'POST':
+    
+        availability_data = json.loads(request.data)
+        year = int(availability_data["year"])
+        month = int(availability_data["month"])
+        player_id = current_user.id
 
-    # Get all days for a calendar starting on a monday and ending on a sunday
-    iter_days = c.itermonthdays3(now.year, now.month)
-    before_month_days = []
-    after_month_days = []
-    month_days = []
+        for availability_key in ["available", "unavailable"]:
+            for day_num in availability_data[availability_key]:
 
-    # Sort days into lists for previous, current and following month
-    for date in iter_days:
-        if date[:2] == (now.year, now.month):
-            month_days.append(date[2])
-        elif date[:2] < (now.year, now.month):
-            before_month_days.append(date[2])
-        else:
-            after_month_days.append(date[2])
+                day=date(year, month, int(day_num))
+                available = availability_key == "available"
+
+                # Check if availability day already exists for current user
+                availability = Availability.query.filter_by(
+                    player_id=player_id,
+                    day=day
+                ).first()
+
+                # If so update availability
+                if availability:
+                    availability.available = available
+
+                # Else insert
+                else:
+                    availability = Availability(
+                        player_id=player_id,
+                        day=day,
+                        available=available
+                    )
+                    db.session.add(availability)
+
+        db.session.commit()
+        
+        return (
+            json.dumps({'success':True}),
+            200,
+            {'ContentType':'application/json'}
+        )
+
+    # Display a calendar on which user can select (un)available days
+    else:
+        # Set calendar to current month
+        # TODO : display calendar for other months
+        now = datetime.now()
+        month_name = calendar.month_name[now.month]
+        c = calendar.Calendar()
+
+        # Get all days for a monthly calendar starting on a monday and ending
+        # on a sunday
+        iter_days = c.itermonthdays3(now.year, now.month)
+        before_month_days = []
+        after_month_days = []
+        month_days = []
+
+        # Sort days into lists for previous, current and following month
+        for day in iter_days:
+            if day[:2] == (now.year, now.month):
+                month_days.append(day[2])
+            elif day[:2] < (now.year, now.month):
+                before_month_days.append(day[2])
+            else:
+                after_month_days.append(day[2])
 
     return render_template(
-        'my_schedule.html', month=month, year=now.year,
-        before_month_days=before_month_days, after_month_days=after_month_days,
-        month_days=month_days, active_day=now.day
+        'my_schedule.html', month=now.month, month_name=month_name,
+        year=now.year, before_month_days=before_month_days,
+        after_month_days=after_month_days, month_days=month_days
     )
