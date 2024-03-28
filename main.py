@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 
+from app import db
 from models import Player, Table
 
 main = Blueprint('main', __name__)
