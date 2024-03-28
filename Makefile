@@ -1,11 +1,11 @@
 ENV=.venv
 PYTHON=$(ENV)/bin/python3
 PYTHON_VERSION=3.8
-FLASK_APP=app:app
+FLASK_APP=rollforschedule/app:app
 FLASK := FLASK_APP=$(FLASK_APP) $(ENV)/bin/flask
 
 run: migrate
-	gunicorn app:app
+	gunicorn --chdir ./rollforschedule app:app
 
 debug: migrate
 	python3 -m venv $(ENV)
@@ -17,7 +17,7 @@ clean:
 	rm -rf $(ENV)
 
 migrate: $(ENV)/bin/activate
-	$(PYTHON) init_db.py
+	$(PYTHON) rollforschedule/init_db.py
 
 $(ENV)/bin/activate: requirements.txt
 	python3 -m venv $(ENV)
@@ -25,4 +25,4 @@ $(ENV)/bin/activate: requirements.txt
 
 build:
 	pip install -r requirements.txt
-	python init_db.py
+	python rollforschedule/init_db.py
