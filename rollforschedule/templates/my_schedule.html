@@ -11,7 +11,7 @@
     function toggleAvailability(clicked_id) {
       const element = document.getElementById(clicked_id);
 
-      var new_class
+      let new_class
       if (element.className == "available") {
         new_class = "unavailable";
       } else {
@@ -37,7 +37,7 @@
 
       // Build data
 
-      var availability_data = {}
+      let availability_data = {}
       const calendar_settings = document.querySelector("meta[id='calendar-settings']")
       availability_data["month"] = calendar_settings.getAttribute("month");
       availability_data["year"] = calendar_settings.getAttribute("year");
