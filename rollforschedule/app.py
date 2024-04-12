@@ -1,7 +1,7 @@
 import os
 
 from admin import TableView, PlayerView, AvailabilityView, AdminView
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask
 from flask_admin import Admin
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
@@ -12,14 +12,14 @@ db = SQLAlchemy()
 def create_app():
     from auth import auth as auth_blueprint
     from main import main as main_blueprint
-    from date_picker import date_picker as date_picker_blueprint
+    from scheduler import scheduler as scheduler_blueprint
 
     basedir = os.path.abspath(os.path.dirname(__file__))
 
     app = Flask(__name__)
 
     app.config['SQLALCHEMY_DATABASE_URI'] =\
-        'sqlite:///' + os.path.join(basedir, 'database.db')
+        'sqlite:///' + os.path.join(basedir, 'database.sqlite')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev')
 
@@ -37,7 +37,7 @@ def create_app():
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(main_blueprint)
-    app.register_blueprint(date_picker_blueprint)
+    app.register_blueprint(scheduler_blueprint)
 
     app.config['FLASK_ADMIN_SWATCH'] = 'slate'
     admin = Admin(

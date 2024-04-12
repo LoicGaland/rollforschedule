@@ -20,7 +20,9 @@ class GenericView(ModelView):
 
 class PlayerView(GenericView):
 
-    column_list = ('id', 'username', 'email', 'admin_rights', 'created_at', 'tables')
+    column_list = (
+        'id', 'username', 'email', 'admin_rights', 'created_at', 'tables'
+    )
 
     def get_edit_form(self):
         form_class = super(PlayerView, self).get_edit_form()
