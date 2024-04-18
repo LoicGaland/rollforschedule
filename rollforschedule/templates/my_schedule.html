@@ -74,8 +74,8 @@
 
  <div class="month">
   <ul>
-    <li class="prev">&#10094;</li>
-    <li class="next">&#10095;</li>
+    <a href="{{ url_for('scheduler.my_schedule') }}?year={{prev_year}}&month={{prev_month}}"><li class="prev">&#10094;</li></a>
+    <a href="{{ url_for('scheduler.my_schedule') }}?year={{next_year}}&month={{next_month}}"><li class="next">&#10095;</li></a>
     <li>{{month_name}}<br><span style="font-size:18px">{{year}}</span></li>
   </ul>
 </div>

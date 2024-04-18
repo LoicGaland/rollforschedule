@@ -9,7 +9,7 @@ from app import db
 from models import Availability
 
 
-scheduler = Blueprint('date_picker', __name__)
+scheduler = Blueprint('scheduler', __name__)
 
 
 @scheduler.route('/my_schedule', methods=['GET', 'POST'])
@@ -66,6 +66,9 @@ def my_schedule():
             now = datetime.now()
             year = now.year
             month = now.month
+        else:
+            year = int(year)
+            month = int(month)
 
         # Set calendar to month
         month_name = calendar.month_name[month]
@@ -87,10 +90,26 @@ def my_schedule():
             else:
                 after_month_days.append(day[2])
 
+        # Get previous and next month for navigation
+        if month == 1:
+            prev_month = 12
+            prev_year = year - 1
+        else:
+            prev_month = month - 1
+            prev_year = year
+        if month == 12:
+            next_month = 1
+            next_year = year + 1
+        else:
+            next_month = month + 1
+            next_year = year
+
     return render_template(
         'my_schedule.html', month=month, month_name=month_name,
         year=year, before_month_days=before_month_days,
-        after_month_days=after_month_days, month_days=month_days
+        after_month_days=after_month_days, month_days=month_days,
+        prev_month=prev_month, prev_year=prev_year, next_month=next_month,
+        next_year=next_year
     )
 
 
