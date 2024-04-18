@@ -59,31 +59,37 @@ def my_schedule():
 
     # Display a calendar on which user can select (un)available days
     else:
-        # Set calendar to current month
-        # TODO : display calendar for other months
-        now = datetime.now()
-        month_name = calendar.month_name[now.month]
+        # Get year and month from parameters or default to current
+        year = request.args.get('year')
+        month = request.args.get('month')
+        if not (month and year):
+            now = datetime.now()
+            year = now.year
+            month = now.month
+
+        # Set calendar to month
+        month_name = calendar.month_name[month]
         c = calendar.Calendar()
 
         # Get all days for a monthly calendar starting on a monday and ending
         # on a sunday
-        iter_days = c.itermonthdays3(now.year, now.month)
+        iter_days = c.itermonthdays3(year, month)
         before_month_days = []
         after_month_days = []
         month_days = []
 
         # Sort days into lists for previous, current and following month
         for day in iter_days:
-            if day[:2] == (now.year, now.month):
+            if day[:2] == (year, month):
                 month_days.append(day[2])
-            elif day[:2] < (now.year, now.month):
+            elif day[:2] < (year, month):
                 before_month_days.append(day[2])
             else:
                 after_month_days.append(day[2])
 
     return render_template(
-        'my_schedule.html', month=now.month, month_name=month_name,
-        year=now.year, before_month_days=before_month_days,
+        'my_schedule.html', month=month, month_name=month_name,
+        year=year, before_month_days=before_month_days,
         after_month_days=after_month_days, month_days=month_days
     )
 
