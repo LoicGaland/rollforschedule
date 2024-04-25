@@ -41,13 +41,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 # Copy the source code into the container.
 COPY . .
-RUN chown appuser ./rollforschedule/database.db
 
 # Expose the port that the application listens on.
 EXPOSE 5000
-
-# Switch to the non-privileged user to run the application.
-# USER appuser
 
 # Run the application.
 CMD ./start.sh
