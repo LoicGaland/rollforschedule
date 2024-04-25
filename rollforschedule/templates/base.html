@@ -145,6 +145,9 @@ body {font-family: Verdana, sans-serif;}
                             <a href="{{ url_for('main.profile') }}" class="navbar-item">
                                 Profile
                             </a>
+                            <a href="{{ url_for('scheduler.my_schedule') }}" class="navbar-item">
+                                My Schedule
+                            </a>
                             {% endif %}
                             {% if current_user.admin_rights %}
                             <a href="/admin" class="navbar-item">
