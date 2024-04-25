@@ -2,6 +2,7 @@
 
 ## Description
 This app is meant to help our group manage our everlasting scheduling conflicts for our TTRPG sessions.
+In its current state, only provides a basic calendar to select available days.
 
 ## Dependencies
 - Python 3.10
