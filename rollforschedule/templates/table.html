@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import table_element %}
+
+{% block content %}
+    <span class="title">
+        <h1>{% block title %} {{ table.title }}{% endblock %} </h1>
+    </span>
+    <div class="content">
+    {{ table_element(table) }}
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %} My schedule {% endblock %}
+{% block meta %}
+<meta id="calendar-settings" month={{month}} year={{year}}>
+{% endblock %}
+{% block content %}
+<body>
+  <script>
+
+    // Set clicked day as available/unavailable
+    function toggleAvailability(clicked_id) {
+      const element = document.getElementById(clicked_id);
+
+      let new_class
+      if (element.className == "available") {
+        new_class = "unavailable";
+      } else {
+        new_class = "available";
+      }
+        
+      element.classList.remove(element.className);
+      element.classList.add(new_class);
+    }
+
+    // Unset right clicked day
+    function unsetAvailability(right_clicked_id) {
+      const element = document.getElementById(right_clicked_id);
+
+      if (element.className != "unset") {
+        element.classList.remove(element.className);
+        element.classList.add("unset");
+      }
+    }
+
+    // POST month availability
+    async function saveAvailability() {
+
+      // Build data
+
+      let availability_data = {}
+      const calendar_settings = document.querySelector("meta[id='calendar-settings']")
+      availability_data["month"] = calendar_settings.getAttribute("month");
+      availability_data["year"] = calendar_settings.getAttribute("year");
+
+      for (availability of ["available", "unavailable"]) {
+
+        availability_data[availability] = []
+        const available_days = document.getElementsByClassName(availability)
+
+        for (const available_day of available_days) {
+          availability_data[availability].push(available_day.textContent.trim())
+        }
+      }
+
+      // POST data
+      try {
+        const response = await fetch(document.URL, {
+          method: "POST",
+          body: JSON.stringify(availability_data),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8"
+          }
+        });
+        const json = await response.json();
+        console.log(json);
+        alert("Saved!");
+      } catch (error) {
+        console.error(error)
+        alert("Something went wrong...");
+      }
+    }
+
+  </script>
+
+ <div class="month">
+  <ul>
+    <a href="{{ url_for('scheduler.my_schedule') }}?year={{prev_year}}&month={{prev_month}}"><li class="prev">&#10094;</li></a>
+    <a href="{{ url_for('scheduler.my_schedule') }}?year={{next_year}}&month={{next_month}}"><li class="next">&#10095;</li></a>
+    <li>{{month_name}}<br><span style="font-size:18px">{{year}}</span></li>
+  </ul>
+</div>
+
+<ul class="weekdays">
+  <li>Mo</li>
+  <li>Tu</li>
+  <li>We</li>
+  <li>Th</li>
+  <li>Fr</li>
+  <li>Sa</li>
+  <li>Su</li>
+</ul>
+
+<ul id="month_days" class="days">
+  {%for day in before_month_days%}
+    <li>
+      <span class="out_of_current_month">{{day}}</span>
+    </li>
+  {%endfor%}
+  {%for day in month_days%}
+  	<li>
+        <span id={{day}} class="unset" onclick="toggleAvailability(this.id)" oncontextmenu="unsetAvailability(this.id);return false;">
+          {{day}}
+        </span>
+    </li>
+  {%endfor%}
+  {%for day in after_month_days%}
+    <li>
+      <span class="out_of_current_month">{{day}}</span>
+    </li>
+  {%endfor%}
+</ul>
+<button type="button" onclick="saveAvailability()">Save</button>
+
+</body>
+{% endblock %}

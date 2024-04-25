@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import player_element %}
+
+{% block content %}
+    <span class="title">
+        <h1>{% block title %} {{ player.username }}{% endblock %} </h1>
+    </span>
+    <div class="content">
+    {{ player_element(player) }}
+</div>
+{% endblock %}
