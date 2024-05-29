@@ -4,6 +4,7 @@ from datetime import datetime, date
 
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
+from sqlalchemy import and_
 
 from app import db
 from models import Availability
@@ -70,6 +71,16 @@ def my_schedule():
             year = int(year)
             month = int(month)
 
+        # Get availability previously selected by user if any
+        availability = get_player_availability(current_user.id, year, month)
+        available_days = []
+        unavailable_days = []
+        for day in availability:
+            if day.available:
+                available_days.append(day.day.day)
+            else:
+                unavailable_days.append(day.day.day)
+
         # Set calendar to month
         month_name = calendar.month_name[month]
         c = calendar.Calendar()
@@ -109,7 +120,8 @@ def my_schedule():
         year=year, before_month_days=before_month_days,
         after_month_days=after_month_days, month_days=month_days,
         prev_month=prev_month, prev_year=prev_year, next_month=next_month,
-        next_year=next_year
+        next_year=next_year, available_days=available_days,
+        unavailable_days=unavailable_days
     )
 
 
@@ -117,3 +129,19 @@ def my_schedule():
 @login_required
 def scheduling():
     pass
+
+
+def get_player_availability(player_id, year, month):
+    last_month_day = calendar.monthrange(year, month)[1]
+
+    availability = Availability.query.filter(
+        and_(
+            Availability.player_id==player_id,
+            Availability.day.between(
+                date(year, month, 1),
+                date(year, month, last_month_day)
+            )
+        )
+    ).all()
+
+    return availability

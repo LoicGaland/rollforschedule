@@ -97,11 +97,25 @@
     </li>
   {%endfor%}
   {%for day in month_days%}
-  	<li>
-        <span id={{day}} class="unset" onclick="toggleAvailability(this.id)" oncontextmenu="unsetAvailability(this.id);return false;">
-          {{day}}
-        </span>
-    </li>
+    {%if day in available_days%}
+      <li>
+          <span id={{day}} class="available" onclick="toggleAvailability(this.id)" oncontextmenu="unsetAvailability(this.id);return false;">
+            {{day}}
+          </span>
+      </li>
+    {%elif day in unavailable_days%}
+      <li>
+          <span id={{day}} class="unavailable" onclick="toggleAvailability(this.id)" oncontextmenu="unsetAvailability(this.id);return false;">
+            {{day}}
+          </span>
+      </li>
+    {%else%}
+      <li>
+          <span id={{day}} class="unset" onclick="toggleAvailability(this.id)" oncontextmenu="unsetAvailability(this.id);return false;">
+            {{day}}
+          </span>
+      </li>
+    {%endif%}
   {%endfor%}
   {%for day in after_month_days%}
     <li>
