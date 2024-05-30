@@ -50,6 +50,16 @@ def my_schedule():
                     )
                     db.session.add(availability)
 
+        # Remove unset availability in case they were previously set as
+        # (un)available
+        for day_num in availability_data["unset"]:
+
+            day = date(year, month, int(day_num))
+            Availability.query.filter_by(
+                player_id=player_id,
+                day=day
+            ).delete()
+
         db.session.commit()
 
         return (

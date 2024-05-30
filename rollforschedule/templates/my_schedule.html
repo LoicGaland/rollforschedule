@@ -42,7 +42,7 @@
       availability_data["month"] = calendar_settings.getAttribute("month");
       availability_data["year"] = calendar_settings.getAttribute("year");
 
-      for (availability of ["available", "unavailable"]) {
+      for (availability of ["available", "unavailable", "unset"]) {
 
         availability_data[availability] = []
         const available_days = document.getElementsByClassName(availability)
