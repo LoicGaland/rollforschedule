@@ -12,24 +12,16 @@
       const element = document.getElementById(clicked_id);
 
       let new_class
-      if (element.className == "available") {
+      if (element.className == "unset") {
+        new_class = "available";
+      } else if (element.className == "available") {
         new_class = "unavailable";
       } else {
-        new_class = "available";
+        new_class = "unset";
       }
         
       element.classList.remove(element.className);
       element.classList.add(new_class);
-    }
-
-    // Unset right clicked day
-    function unsetAvailability(right_clicked_id) {
-      const element = document.getElementById(right_clicked_id);
-
-      if (element.className != "unset") {
-        element.classList.remove(element.className);
-        element.classList.add("unset");
-      }
     }
 
     // POST month availability
@@ -99,19 +91,19 @@
   {%for day in month_days%}
     {%if day in available_days%}
       <li>
-          <span id={{day}} class="available" onclick="toggleAvailability(this.id)" oncontextmenu="unsetAvailability(this.id);return false;">
+          <span id={{day}} class="available" onclick="toggleAvailability(this.id)">
             {{day}}
           </span>
       </li>
     {%elif day in unavailable_days%}
       <li>
-          <span id={{day}} class="unavailable" onclick="toggleAvailability(this.id)" oncontextmenu="unsetAvailability(this.id);return false;">
+          <span id={{day}} class="unavailable" onclick="toggleAvailability(this.id)">
             {{day}}
           </span>
       </li>
     {%else%}
       <li>
-          <span id={{day}} class="unset" onclick="toggleAvailability(this.id)" oncontextmenu="unsetAvailability(this.id);return false;">
+          <span id={{day}} class="unset" onclick="toggleAvailability(this.id)">
             {{day}}
           </span>
       </li>
