@@ -12,7 +12,8 @@ from models import Availability
 
 scheduler = Blueprint('scheduler', __name__)
 
-
+# Personal schedule route, where user select which dates they are available at.
+# Those (un)available dates are then POSTed and stored in DB.
 @scheduler.route('/my_schedule', methods=['GET', 'POST'])
 @login_required
 def my_schedule():
@@ -135,10 +136,6 @@ def my_schedule():
     )
 
 
-@scheduler.route('/scheduling')
-@login_required
-def scheduling():
-    pass
 
 
 def get_player_availability(player_id, year, month):

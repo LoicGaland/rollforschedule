@@ -1,5 +1,5 @@
 {% macro table_element(table) %}
-            <div class="db_element">
+            <div class="db_element"  onclick="{{ 'location.href=\'' + url_for('main.table', table_id=table.id) + '\';'}}"  style="cursor: pointer;">
                 <h3>{{ table.title }}</h4>
                 <h4>Description</h4>
                 <p>{{ table.description }}</p>
