@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% from 'macros.html' import table_element, calendar_element %}
+
 {% block title %} My schedule {% endblock %}
 {% block meta %}
 <meta id="calendar-settings" month={{month}} year={{year}}>
@@ -64,58 +66,7 @@
 
   </script>
 
- <div class="month">
-  <ul>
-    <a href="{{ url_for('scheduler.my_schedule') }}?year={{prev_year}}&month={{prev_month}}"><li class="prev">&#10094;</li></a>
-    <a href="{{ url_for('scheduler.my_schedule') }}?year={{next_year}}&month={{next_month}}"><li class="next">&#10095;</li></a>
-    <li>{{month_name}}<br><span style="font-size:18px">{{year}}</span></li>
-  </ul>
-</div>
-
-<ul class="weekdays">
-  <li>Mo</li>
-  <li>Tu</li>
-  <li>We</li>
-  <li>Th</li>
-  <li>Fr</li>
-  <li>Sa</li>
-  <li>Su</li>
-</ul>
-
-<ul id="month_days" class="days">
-  {%for day in before_month_days%}
-    <li>
-      <span class="out_of_current_month">{{day}}</span>
-    </li>
-  {%endfor%}
-  {%for day in month_days%}
-    {%if day in available_days%}
-      <li>
-          <span id={{day}} class="available" onclick="toggleAvailability(this.id)">
-            {{day}}
-          </span>
-      </li>
-    {%elif day in unavailable_days%}
-      <li>
-          <span id={{day}} class="unavailable" onclick="toggleAvailability(this.id)">
-            {{day}}
-          </span>
-      </li>
-    {%else%}
-      <li>
-          <span id={{day}} class="unset" onclick="toggleAvailability(this.id)">
-            {{day}}
-          </span>
-      </li>
-    {%endif%}
-  {%endfor%}
-  {%for day in after_month_days%}
-    <li>
-      <span class="out_of_current_month">{{day}}</span>
-    </li>
-  {%endfor%}
-</ul>
-<button type="button" onclick="saveAvailability()">Save</button>
+  {{ calendar_element(calendar_configuration, player_availability, True) }}
 
 </body>
 {% endblock %}

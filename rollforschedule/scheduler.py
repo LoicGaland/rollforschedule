@@ -4,10 +4,10 @@ from datetime import datetime, date
 
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
-from sqlalchemy import and_
+from sqlalchemy import and_, text
 
 from app import db
-from models import Availability
+from models import Availability, Table
 
 
 scheduler = Blueprint('scheduler', __name__)
@@ -70,77 +70,98 @@ def my_schedule():
         )
 
     # Display a calendar on which user can select (un)available days
-    else:
-        # Get year and month from parameters or default to current
-        year = request.args.get('year')
-        month = request.args.get('month')
-        if not (month and year):
-            now = datetime.now()
-            year = now.year
-            month = now.month
-        else:
-            year = int(year)
-            month = int(month)
+    else:        
+        year, month = get_year_and_month()
 
-        # Get availability previously selected by user if any
-        availability = get_player_availability(current_user.id, year, month)
-        available_days = []
-        unavailable_days = []
-        for day in availability:
-            if day.available:
-                available_days.append(day.day.day)
-            else:
-                unavailable_days.append(day.day.day)
+        calendar_configuration = get_calendar_configuration(year, month)
+        player_availability = get_player_availability(current_user.id, year, month)
 
-        # Set calendar to month
-        month_name = calendar.month_name[month]
-        c = calendar.Calendar()
+        return render_template(
+            'my_schedule.html',
+            calendar_configuration=calendar_configuration,
+            player_availability=player_availability
+        )
+    
 
-        # Get all days for a monthly calendar starting on a monday and ending
-        # on a sunday
-        iter_days = c.itermonthdays3(year, month)
-        before_month_days = []
-        after_month_days = []
-        month_days = []
+@scheduler.route("/table/<int:table_id>")
+def table(table_id):
+    table = Table.query.get_or_404(table_id)
+    # TODO : query player's available days to compute days where playing this
+    # table is possible, and display the results
 
-        # Sort days into lists for previous, current and following month
-        for day in iter_days:
-            if day[:2] == (year, month):
-                month_days.append(day[2])
-            elif day[:2] < (year, month):
-                before_month_days.append(day[2])
-            else:
-                after_month_days.append(day[2])
-
-        # Get previous and next month for navigation
-        if month == 1:
-            prev_month = 12
-            prev_year = year - 1
-        else:
-            prev_month = month - 1
-            prev_year = year
-        if month == 12:
-            next_month = 1
-            next_year = year + 1
-        else:
-            next_month = month + 1
-            next_year = year
+    year, month = get_year_and_month()
+    calendar_configuration = get_calendar_configuration(year, month)
+    table_availability = get_table_availability(table_id, year, month)
 
     return render_template(
-        'my_schedule.html', month=month, month_name=month_name,
-        year=year, before_month_days=before_month_days,
-        after_month_days=after_month_days, month_days=month_days,
-        prev_month=prev_month, prev_year=prev_year, next_month=next_month,
-        next_year=next_year, available_days=available_days,
-        unavailable_days=unavailable_days
+        'table.html',
+        table=table,
+        calendar_configuration=calendar_configuration,
+        table_availability=table_availability
     )
 
+def get_year_and_month():
+    # Get year and month from parameters or default to current
+    year = request.args.get('year')
+    month = request.args.get('month')
+    if not (month and year):
+        now = datetime.now()
+        year = now.year
+        month = now.month
+    else:
+        year = int(year)
+        month = int(month)
+    return year, month
 
+def get_calendar_configuration(year, month):
+    calendar_configuration = {
+        "year": year,
+        "month": month,
+        "month_name": calendar.month_name[month],
+        "before_month_days": [],
+        "after_month_days": [],
+        "month_days": []
+    }
 
+    # Get all days for a monthly calendar starting on a monday and ending
+    # on a sunday
+    c = calendar.Calendar()
+    iter_days = c.itermonthdays3(year, month)
+
+    # Sort days into lists for previous, current and following month
+    for day in iter_days:
+        if day[:2] == (year, month):
+            calendar_configuration["month_days"].append(day[2])
+        elif day[:2] < (year, month):
+            calendar_configuration["before_month_days"].append(day[2])
+        else:
+            calendar_configuration["after_month_days"].append(day[2])
+
+    # Get previous and next month for navigation
+    if month == 1:
+        calendar_configuration["prev_month"] = 12
+        calendar_configuration["prev_year"] = year - 1
+    else:
+        calendar_configuration["prev_month"] = month - 1
+        calendar_configuration["prev_year"] = year
+    if month == 12:
+        calendar_configuration["next_month"] = 1
+        calendar_configuration["next_year"] = year + 1
+    else:
+        calendar_configuration["next_month"] = month + 1
+        calendar_configuration["next_year"] = year
+
+    return calendar_configuration
 
 def get_player_availability(player_id, year, month):
-    last_month_day = calendar.monthrange(year, month)[1]
+    # Get availability previously selected by player if any
+    player_availability = {
+        "available_days": [],
+        "unavailable_days": []
+    }
 
+    # Get player availability from db
+    last_month_day = calendar.monthrange(year, month)[1]
     availability = Availability.query.filter(
         and_(
             Availability.player_id==player_id,
@@ -150,5 +171,62 @@ def get_player_availability(player_id, year, month):
             )
         )
     ).all()
+    
+    # Sort days into available/unavailable
+    for day in availability:
+        if day.available:
+            player_availability["available_days"].append(day.day.day)
+        else:
+            player_availability["unavailable_days"].append(day.day.day)
 
-    return availability
+    return player_availability
+
+def get_table_availability(table_id, year, month):
+    table_availability = {
+        "available_days": [],
+        "unavailable_days": []
+    }
+
+    last_month_day = calendar.monthrange(year, month)[1]
+    month_range = (
+        date(year, month, 1).strftime("%Y-%m-%d"),
+        date(year, month, last_month_day).strftime("%Y-%m-%d")
+    )
+    
+    # query for days where everyone is available
+    query = text(
+        f"""
+            SELECT CAST(STRFTIME("%d", day) AS INT)
+            FROM availability
+            INNER JOIN player ON availability.player_id = player.id
+            INNER JOIN table_player ON table_player.player_id = player.id
+            WHERE table_id = {table_id}
+                AND day BETWEEN '{month_range[0]}' and '{month_range[1]}'
+                AND available = TRUE
+            GROUP BY day
+            HAVING COUNT(availability.player_id) = (
+                SELECT COUNT(*)
+                FROM table_player
+                WHERE table_id = {table_id}
+            )
+        """
+    )
+    results = db.session.execute(query)
+    table_availability["available_days"] = [row[0] for row in results]
+
+    # query for days where at least one player is unavailable
+    query = text(
+        f"""
+            SELECT DISTINCT CAST(STRFTIME("%d", day) AS INT)
+            FROM availability
+            INNER JOIN player ON availability.player_id = player.id
+            INNER JOIN table_player ON table_player.player_id = player.id
+            WHERE table_id = {table_id}
+                AND day BETWEEN '{month_range[0]}' and '{month_range[1]}'
+                AND available = FALSE
+        """
+    )
+    results = db.session.execute(query)
+    table_availability["unavailable_days"] = [row[0] for row in results]
+
+    return table_availability

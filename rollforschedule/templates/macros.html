@@ -1,5 +1,5 @@
 {% macro table_element(table) %}
-            <div class="db_element"  onclick="{{ 'location.href=\'' + url_for('main.table', table_id=table.id) + '\';'}}"  style="cursor: pointer;">
+            <div class="db_element"  onclick="{{ 'location.href=\'' + url_for('scheduler.table', table_id=table.id) + '\';'}}"  style="cursor: pointer;">
                 <h3>{{ table.title }}</h4>
                 <h4>Description</h4>
                 <p>{{ table.description }}</p>
@@ -18,10 +18,79 @@
                 <p>Tables:
                      <ul>
                         {% for table in player.tables %}
-                        <li><a href="{{ url_for('main.table', table_id=table.id) }}">{{ table.title }}</a></li>
+                        <li><a href="{{ url_for('scheduler.table', table_id=table.id) }}">{{ table.title }}</a></li>
                         {% endfor %}
                     </ul> 
                 </p>
                 <p>Joined: {{ player.created_at }}</p>
             </div>
+{% endmacro %}
+
+{% macro calendar_element(calendar_configuration, availability, editable) %}
+    <div class="month">
+        <ul>
+        <a href="{{ url_for(request.endpoint, **dict(request.view_args, year=calendar_configuration['prev_year'], month=calendar_configuration['prev_month'])) }}"><li class="prev">&#10094;</li></a>
+        <a href="{{ url_for(request.endpoint, **dict(request.view_args, year=calendar_configuration['next_year'], month=calendar_configuration['next_month'])) }}"><li class="next">&#10095;</li></a>
+        <li>{{calendar_configuration['month_name']}}<br><span style="font-size:18px">{{calendar_configuration['year']}}</span></li>
+        </ul>
+    </div>
+  
+    <ul class="weekdays">
+        <li>Mo</li>
+        <li>Tu</li>
+        <li>We</li>
+        <li>Th</li>
+        <li>Fr</li>
+        <li>Sa</li>
+        <li>Su</li>
+    </ul>
+
+    <ul id="month_days" class="days">
+        {% for day in calendar_configuration['before_month_days'] %}
+            <li>
+            <span class="out_of_current_month">{{day}}</span>
+            </li>
+        {% endfor %}
+        {% for day in calendar_configuration['month_days'] %}
+            {% if day in availability['available_days'] %}
+            <li>
+                {% if editable %}
+                <span id={{day}} class="available" onclick="toggleAvailability(this.id)">
+                {% else %}
+                <span id={{day}} class="available">
+                {% endif %}
+                    {{day}}
+                </span>
+            </li>
+            {% elif day in availability['unavailable_days'] %}
+            <li>
+                {% if editable %}
+                <span id={{day}} class="unavailable" onclick="toggleAvailability(this.id)">
+                {% else %}
+                <span id={{day}} class="unavailable">
+                {% endif %}
+                    {{day}}
+                </span>
+            </li>
+            {%else%}
+            <li>
+                {% if editable %}
+                <span id={{day}} class="unset" onclick="toggleAvailability(this.id)">
+                {% else %}
+                <span id={{day}} class="unset">
+                {% endif %}
+                    {{day}}
+                </span>
+            </li>
+            {%endif%}
+        {% endfor %}
+        {% for day in calendar_configuration['after_month_days'] %}
+            <li>
+            <span class="out_of_current_month">{{day}}</span>
+            </li>
+        {% endfor %}
+    </ul>
+    {% if editable %}
+    <button type="button" onclick="saveAvailability()">Save</button>
+    {% endif %}
 {% endmacro %}

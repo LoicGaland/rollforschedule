@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
-{% from 'macros.html' import table_element %}
+{% from 'macros.html' import table_element, calendar_element %}
 
 {% block content %}
+<body>
     <span class="title">
         <h1>{% block title %} {{ table.title }}{% endblock %} </h1>
     </span>
     <div class="content">
     {{ table_element(table) }}
 </div>
+{{ calendar_element(calendar_configuration, table_availability, False) }}
+</body>
+
 {% endblock %}
